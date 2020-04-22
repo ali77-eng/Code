@@ -1,6 +1,6 @@
 #include <cs50.h>
 #include <stdio.h>
-
+//ask for height
 int main(void)
 {
     int h;
@@ -9,19 +9,21 @@ int main(void)
         h = get_int("Height: ");
     }
     while (h<1||h>8);
-
-    for (int i=1; i<=h; i++)
+//print hastags
+    for (int i = 1; i <= h; i++)
     {
-        for(int n=h; n>i; n--)
+        for (int n = h; n > i; n--)
         {
             printf(" ");
         }
-        for(int n=0; n<i; n++)
+        //hey
+        for (int n = 0; n < i; n++)
         {
             printf("#");
         }
         printf("  ");
-        for(int n=0; n<i; n++)
+        //hi
+        for (int n=0; n<i; n++)
         {
             printf("#");
         }
