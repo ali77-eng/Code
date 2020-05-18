@@ -17,7 +17,7 @@ int main(void)
             letters++;
         }
     }
-    printf("%i letter(s)\n", letters);
+    //printf("%i letter(s)\n", letters);
 
     //count words
     int words = 1;
@@ -28,7 +28,7 @@ int main(void)
             words++;
         }
     }
-    printf("%i word(s)\n", words);
+    //printf("%i word(s)\n", words);
 
     //count sentences
     int sentences = 0;
@@ -39,7 +39,7 @@ int main(void)
             sentences++;
         }
     }
-    printf("%i sentence(s)\n", sentences);
+    //printf("%i sentence(s)\n", sentences);
 
     //L
     int L = 0;
