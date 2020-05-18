@@ -42,11 +42,11 @@ int main(void)
     //printf("%i sentence(s)\n", sentences);
 
     //L
-    int L = 0;
+    float L = 0;
     L = (100*letters)/words;
 
     //S
-    int S = 0;
+    float S = 0;
     S = (100*sentences)/words;
 
     //Coleman-Liau Index
