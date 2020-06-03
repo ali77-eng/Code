@@ -33,6 +33,7 @@ void add_pairs(void);
 void sort_pairs(void);
 void lock_pairs(void);
 void print_winner(void);
+bool cycle(int i, int j);
 
 int main(int argc, string argv[])
 {
@@ -180,16 +181,13 @@ void lock_pairs(void)
     // TODO
     for (int i = 0; i < pair_count; i++)
     {
-        locked[pairs[i].winner][pairs[i].loser] = true;
-    }
-    for (int i = 0; i < pair_count; i++)
-    {
-        for (int j = i+1; i < pair_count; j++)
+        if (!cycle(pairs[i].winner, pairs[i].loser))
         {
-            if (pairs[i].winner == pairs[j].loser)
-            {
-                locked[pairs[j].winner][pairs[j].loser] = false;
-            }
+            locked[pairs[i].winner][pairs[i].loser] = true;
+        }
+        else if (!cycle(pairs[i].winner, pairs[i].loser) && pairs[0].winner != pairs[i].loser)
+        {
+            locked[pairs[i].winner][pairs[i].loser] = true;
         }
     }
 }
@@ -216,5 +214,21 @@ void print_winner(void)
         }
     }
     return;
+}
+
+bool cycle(int winner, int loser)
+{
+    if (locked[loser][winner])
+    {
+        return true;
+    }
+    for (int i = 0; i < pair_count; i++)
+    {
+        if (locked[i][winner])
+        {
+            cycle(winner, i);
+        }
+    }
+    return false;
 }
 
