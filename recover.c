@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <cs50.h>
 #define FILE_SIZE 512
 
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
     int counter;
     counter = 0;
 
-    FILE* image;
+    FILE* image = NULL;
     char p[8];
 
     while (fread(buffer, sizeof(buffer), 1, file) == 1)
