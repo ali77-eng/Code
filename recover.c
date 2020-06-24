@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     int counter = 0;
 
     FILE *image = NULL;
-    char p[8];
+    char p[7];
 
     while (fread(buffer, sizeof(buffer), 1, file) == 1)
     {
