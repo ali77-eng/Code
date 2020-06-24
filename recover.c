@@ -23,8 +23,7 @@ int main(int argc, char *argv[])
     }
     //buffer array
     BYTE buffer[FILE_SIZE];
-    int counter;
-    counter = 0;
+    int counter = 0;
 
     FILE* image = NULL;
     char p[8];
