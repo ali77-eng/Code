@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
             {
                 //close
                 fclose(image);
-                sprintf(p, "%03d.jpg", counter);
+                sprintf(p, "%03i.jpg", counter);
                 counter += 1;
 
                 image = fopen(p, "new");
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
             }
             if (counter == 0)
             {
-                sprintf(p, "%03d.jpg", counter);
+                sprintf(p, "%03i.jpg", counter);
                 counter += 1;
                 image = fopen(p, "new");
                 fwrite(buffer, sizeof(buffer), 1, image);
