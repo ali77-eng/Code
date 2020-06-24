@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     BYTE buffer[FILE_SIZE];
     int counter = 0;
 
-    FILE* image = NULL;
+    FILE *image = NULL;
     char p[8];
 
     while (fread(buffer, sizeof(buffer), 1, file) == 1)
