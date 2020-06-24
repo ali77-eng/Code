@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     FILE *image = NULL;
     char p[7];
 
-    while (fread(buffer, sizeof(buffer), 1, file) == 1)
+    while (fread(buffer, sizeof *buffer, 512, file) == 1)
     {
         if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
         {
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
                 counter += 1;
 
                 image = fopen(p, "new");
-                fwrite(buffer, sizeof(buffer), 1, image);
+                fwrite(buffer, sizeof *buffer, 512, image);
 
             }
             if (counter == 0)
@@ -48,12 +48,12 @@ int main(int argc, char *argv[])
                 sprintf(p, "%03i.jpg", counter);
                 counter += 1;
                 image = fopen(p, "new");
-                fwrite(buffer, sizeof(buffer), 1, image);
+                fwrite(buffer, sizeof *buffer, 512, image);
             }
         }
         else if (counter > 0)
         {
-            fwrite(buffer, sizeof(buffer), 1, image);
+            fwrite(buffer, sizeof *buffer, 512, image);
         }
     }
 
