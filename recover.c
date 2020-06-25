@@ -5,8 +5,6 @@
 #include <cs50.h>
 #define FILE_SIZE 512
 
-typedef uint8_t BYTE;
-
 int main(int argc, char *argv[])
 {
     //ask for argument
@@ -23,46 +21,55 @@ int main(int argc, char *argv[])
         return 1;
     }
     //buffer array
-    BYTE buffer[FILE_SIZE];
+    unsigned char buffer[512];
+    bool jpeg = false;
     int counter = 0;
 
     FILE *image = NULL;
     char p[7];
 
-    while (fread(buffer, sizeof *buffer, 512, file))
+    while (fread(buffer, 512, 1, file) == 1)
     {
         if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
         {
-            if (counter > 0)
+            if (jpeg == false)
             {
                 //close
+                sprintf(p, "%03i.jpg", counter);
+                image = fopen(p, "w");
+                if (image == NULL)
+                {
+                    return 1;
+                }
+                fwrite(&buffer, 512, 1, image);
+                counter++;
+                jpeg = true;
+            }
+            else if (jpeg == true)
+            {
                 fclose(image);
                 sprintf(p, "%03i.jpg", counter);
+                image = fopen(p, "w");
+                if (image == NULL)
+                {
+                    return 1;
+                }
+                fwrite(&buffer, 512, 1, image);
                 counter++;
-
-                image = fopen(p, "new");
-                fwrite(buffer, sizeof *buffer, 512, image);
-
-            }
-            if (counter == 0)
-            {
-                sprintf(p, "%03i.jpg", counter);
-                counter++;
-                image = fopen(p, "new");
-                fwrite(buffer, sizeof *buffer, 512, image);
             }
         }
-        if (counter != 0)
+        else
         {
-            fwrite(buffer, sizeof *buffer, 512, image);
+            if (jpeg == true)
+            {
+                fwrite(&buffer, 512, 1, image);
+            }
         }
-    }
+    fclose(file);
     if (image != NULL)
     {
         fclose(image);
     }
-    fclose(file);
-    return 0;
     //fread
     //fread(data, size, number, inptr);
         //if start of JPEG
@@ -71,5 +78,5 @@ int main(int argc, char *argv[])
         //else
             //if already found JPEG
         //Close any remaining files
-
+    }
 }
