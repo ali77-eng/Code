@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
                 fwrite(buffer, sizeof *buffer, 512, image);
             }
         }
-        else if (counter > 0)
+        if (counter != 0)
         {
             fwrite(buffer, sizeof *buffer, 512, image);
         }
