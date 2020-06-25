@@ -5,7 +5,7 @@
 #include <cs50.h>
 #define FILE_SIZE 512
 
-typedef unsigned char BYTE;
+typedef uint8_t BYTE;
 
 int main(int argc, char *argv[])
 {
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     FILE *image = NULL;
     char p[7];
 
-    while (fread(buffer, sizeof *buffer, 512, file) == 1)
+    while (fread(buffer, sizeof *buffer, 512, file))
     {
         if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
         {
