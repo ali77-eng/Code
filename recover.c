@@ -57,8 +57,10 @@ int main(int argc, char *argv[])
             fwrite(buffer, sizeof *buffer, 512, image);
         }
     }
-
-    fclose(image);
+    if (image != NULL)
+    {
+        fclose(image);
+    }
     fclose(file);
     return 0;
     //fread
