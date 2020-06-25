@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     if (file == NULL)
     {
         printf("Could not open %s.\n", argv[1]);
+        return 1;
     }
     //buffer array
     BYTE buffer[FILE_SIZE];
