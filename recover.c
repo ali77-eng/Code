@@ -65,11 +65,7 @@ int main(int argc, char *argv[])
                 fwrite(&buffer, 512, 1, image);
             }
         }
-    fclose(file);
-    if (image != NULL)
-    {
-        fclose(image);
-    }
+
     //fread
     //fread(data, size, number, inptr);
         //if start of JPEG
@@ -78,5 +74,10 @@ int main(int argc, char *argv[])
         //else
             //if already found JPEG
         //Close any remaining files
+    }
+    fclose(file);
+    if (image != NULL)
+    {
+        fclose(image);
     }
 }
