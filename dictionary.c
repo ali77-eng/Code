@@ -1,15 +1,17 @@
+// Implements a dictionary's functionality
+
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <strings.h>
-#include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <string.h>
+#include <strings.h>
 
 #include "dictionary.h"
 
-#define HASHTABLE_SIZE 65536
+#define HASHTABLE_SIZE 10000
 
-// define struct node
+// Defines struct for a node
 typedef struct node
 {
     char word[LENGTH + 1];
@@ -17,116 +19,126 @@ typedef struct node
 }
 node;
 
-
-// declare words to count the words in the dictionary
-int dic_size = 0;
-// declare hashtable
 node *hashtable[HASHTABLE_SIZE];
 
-// hash funtion
-int hash(const char *word)
+// Hashes the word (hash function posted on reddit by delipity)
+// The word you want to hash is contained within new node, arrow, word.
+// Hashing that will give you the index. Then you insert word into linked list.
+int hash_index(char *hash_this)
 {
     unsigned int hash = 0;
-    for (int i = 0, n = strlen(word); i < n; i++)
-        hash = (hash << 2) ^ word[i];
+    for (int i = 0, n = strlen(hash_this); i < n; i++)
+    {
+        hash = (hash << 2) ^ hash_this[i];
+    }
     return hash % HASHTABLE_SIZE;
 }
 
+// Initializes counter for words in dictionary
+int word_count = 0;
 
-/**
- * Returns true if word is in dictionary else false.
- */
-bool check(const char *word)
-{
-    int len = strlen(word);
-    char lword[len + 1];
-    for (int i = 0; i < len; i++)
-    {
-        lword[i] = tolower(word[i]);
-    }
-    lword[len] = '\0';
-
-    int bucket = hash(lword);
-    node *cursor = hashtable[bucket];
-    while (cursor != NULL)
-    {
-        if (strcasecmp(cursor->word, lword) != 0)
-            cursor = cursor->next;
-        else
-            return true;
-    }
-    return false;
-}
-
-/**
- * Loads dictionary into memory. Returns true if successful else false.
- */
+// Loads dictionary into memory, returning true if successful else false
 bool load(const char *dictionary)
 {
-    FILE *dic = fopen(dictionary, "r");
-    if (dic == NULL)
+    // Opens dictionary
+    FILE *file = fopen(dictionary, "r");
+    if (file == NULL)
     {
-        fprintf(stderr, "Cound not open %s.\n", dictionary);
         return false;
     }
-
-    char buffer[LENGTH + 1];
-
-    while (fscanf(dic, "%s", buffer) != EOF)
+    // Scans dictionary word by word (populating hash table with nodes containing words found in dictionary)
+    char word[LENGTH + 1];
+    while (fscanf(file, "%s", word) != EOF)
     {
-        // create a temporary node
-        node *temp = malloc(sizeof(node));
+        // Mallocs a node for each new word (i.e., creates node pointers)
+        node *new_node = malloc(sizeof(node));
+        // Checks if malloc succeeded, returns false if not
+        if (new_node == NULL)
+        {
+            unload();
+            return false;
+        }
+        // Copies word into node if malloc succeeds
+        strcpy(new_node->word, word);
 
-        strncpy(temp->word, buffer, sizeof(buffer));
+        // Initializes & calculates index of word for insertion into hashtable
+        int h = hash_index(new_node->word);
 
-        // implement hash function to get the index
-        int index = hash(buffer);
+        // Initializes head to point to hashtable index/bucket
+        node *head = hashtable[h];
 
-        // if the corresponding index in hashtable is empty, assign it to the temp node
-        if (hashtable[index] == NULL)
-            hashtable[index] = temp;
-
-        // else append temp to the start of the linked list
+        // Inserts new nodes at beginning of lists
+        if (head == NULL)
+        {
+            hashtable[h] = new_node;
+            word_count++;
+        }
         else
         {
-            temp->next = hashtable[index];
-            hashtable[index] = temp;
+            new_node->next = hashtable[h];
+            hashtable[h] = new_node;
+            word_count++;
         }
-        dic_size ++;
     }
-    fclose(dic);
+    fclose(file);
     return true;
 }
 
-/**
- * Returns number of words in dictionary if loaded else 0 if not yet loaded.
- */
+// Returns true if word is in dictionary else false
+bool check(const char *word)
+{
+    // Creates copy of word on which hash function can be performed
+    int n = strlen(word);
+    char word_copy[LENGTH + 1];
+    for (int i = 0; i < n; i++)
+    {
+        word_copy[i] = tolower(word[i]);
+    }
+    // Adds null terminator to end string
+    word_copy[n] = '\0';
+    // Initializes index for hashed word
+    int h = hash_index(word_copy);
+    // Sets cursor to point to same address as hashtable index/bucket
+    node *cursor = hashtable[h];
+    // Sets cursor to point to same location as head
+
+    // If the word exists, you should be able to find in dictionary data structure.
+    // Check for word by asking, which bucket would word be in? hashtable[hash(word)]
+    // While cursor does not point to NULL, search dictionary for word.
+    while (cursor != NULL)
+    {
+        // If strcasecmp returns true, then word has been found
+        if (strcasecmp(cursor->word, word_copy) == 0)
+        {
+            return true;
+        }
+        // Else word has not yet been found, advance cursor
+        else
+        {
+            cursor = cursor->next;
+        }
+    }
+    // Cursor has reached end of list and word has not been found in dictionary so it must be misspelled
+    return false;
+}
+
+// Returns number of words in dictionary if loaded else 0 if not yet loaded
 unsigned int size(void)
 {
-    return dic_size;
+    return word_count;
 }
 
-void destroy(node *head)
-{
-    if (head->next != NULL)
-    {
-        destroy(head->next);
-    }
-    free(head);
-}
-
-
-/**
- * Unloads dictionary from memory. Returns true if successful else false.
- */
+// Unloads dictionary from memory, returning true if successful else false
 bool unload(void)
 {
-    for (int i = 0; i < HASHTABLE_SIZE; i++)
+    node *head = NULL;
+    node *cursor = head;
+    // freeing linked lists
+    while (cursor != NULL)
     {
-        if (hashtable[i] != NULL)
-        {
-            destroy(hashtable[i]);
-        }
+        node *temp = cursor;
+        cursor = cursor->next;
+        free(temp);
     }
     return true;
 }
