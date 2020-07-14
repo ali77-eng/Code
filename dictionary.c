@@ -131,14 +131,16 @@ unsigned int size(void)
 // Unloads dictionary from memory, returning true if successful else false
 bool unload(void)
 {
-    node *head = NULL;
-    node *cursor = head;
-    // freeing linked lists
-    while (cursor != NULL)
+    for (int in = 0; in < 264636; in++)
     {
-        node *temp = cursor;
-        cursor = cursor->next;
-        free(temp);
+        node *fhead = hashtable[in];
+        while (fhead != NULL)
+        {
+            node *fcursor = fhead->next;
+            free(fhead);
+            fhead = fcursor;
+        }
     }
     return true;
 }
+
