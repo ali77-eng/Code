@@ -140,11 +140,11 @@ bool unload(void)
 {
     // TODO
     //free memory using valgrind
-    for (int i = 0; i < N; i ++)
+    for (int i = 0; i < HASHTABLE_SIZE; i ++)
     {
-        if (table[i] != NULL)
+        if (hashtable[i] != NULL)
         {
-            end(table[i]);
+            end(hashtable[i]);
         }
     }
     return true;
