@@ -126,26 +126,22 @@ unsigned int size(void)
     return word_count;
 }
 
-void end(node *head)
-{
-    if (head->next != NULL)
-    {
-        end(head->next);
-    }
-    free(head);
-}
-
 // Unloads dictionary from memory, returning true if successful else false
 bool unload(void)
 {
-    // TODO
-    //free memory using valgrind
-    for (int i = 0; i < HASHTABLE_SIZE; i ++)
+    struct node *cursor;
+    struct node *tmp;
+    int n;
+    for(n=0; n < 676; n++)
     {
-        if (hashtable[i] != NULL)
+        hashtable[n] = tmp;
+        tmp = cursor;
+        while(cursor != NULL)
         {
-            end(hashtable[i]);
+            cursor = cursor->next;
+            free(tmp);
         }
     }
-    return true;
+    return false;
 }
+
