@@ -1,129 +1,193 @@
-#include <stdbool.h>
-#include <strings.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <cs50.h>
+#include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
 #include "dictionary.h"
 
-// Represents a node in a hash table
-typedef struct node
-{
-    char word[LENGTH + 1];
+#define MAX_BUCKETS 60000
+
+// create a struct
+struct node{
+    char word[LENGTH+1];
     struct node *next;
-}
-node;
+};
+
+typedef struct node *node_ptr;
+
+// global variables
+node_ptr hashtable[MAX_BUCKETS];
+int dictionary_word_counter = 0;
 
 
-// Number of buckets in hash table
-const unsigned int N = 676;
 
-// Hash table
-node *table[N];
+/******
+START Custom functions
+******/
 
-// Returns true if word is in dictionary else false
-bool check(const char *word)
+
+size_t precision = 2; //change the precision with this
+size_t generate_hash(const char* str)
 {
-    // TODO
-    return false;
-}
-
-// Hashes word to a number
-unsigned int hash(const char *word)
-{
-    // TODO
-    int first = 0;
-    int second = 0;
-    if(word[0] > 64)
-    {
-        first = word[0]-32;
-    }
-    else
-    {
-        first = word[0];
-    }
-    if(word[1] > 64)
-    {
-        second = word[1]-32;
-    }
-    else
-    {
-        second = word[1];
-    }
-    int bucket = ((first - 65)*26) + (second - 65);
-    printf("%i", bucket);
-    return 0;
+   return ((*(size_t*)str)>> precision) % MAX_BUCKETS;
 }
 
-// Loads dictionary into memory, returning true if successful else false
-bool load(const char *dictionary)
-{
-    char * word = 0;
-    // TODO
-    //fopen
-    FILE * fp;
-    fp = fopen("dictionary", "w");
-    //check if return value is NULL
-    if (fp == NULL)
-    {
-        return 1;
+
+
+
+void insert(node_ptr node, int index){
+
+    // check if the array location is null
+    if ( !(hashtable[index]) ){ // means if array location is null
+        // insert the node and that's that
+        hashtable[index] = node;
     }
-    //read strings
-    //fscanf(file, "%s", word)
-        //EOF means end of file
-    while (fscanf(fp, "%s", word) != EOF)
-    {
-        //create node
-        node *n = malloc(sizeof(node));
-        //check if return is NULL
-        if (n == NULL)
-        {
-            return false;
+    else{
+        // there is a node already at that location
+        // assign our node as the head of the new linked list
+
+        // we need to store the ptr to the old node in a temp variable
+        node_ptr temp = hashtable[index];
+
+        // now we can assign the new node to the head of the list
+        hashtable[index] = node;
+
+        // and attach the  old head node to the new head's next property
+        node->next = temp;
+
+        //printf("linked list created at index: %d\n", index);
+    }
+
+}
+
+
+void free_linked_list(node_ptr head_ptr){
+
+    while(head_ptr != NULL){
+
+        // create temp variable to save the memory location of the head pointer
+        node_ptr temp = head_ptr;
+
+        // set the head node equal to it's next property making it the next node
+        head_ptr = head_ptr->next;
+
+        // free the temp variable which deletes the original head node
+        free(temp);
+    }
+
+}
+
+/******
+END Custom functions
+******/
+
+
+
+
+
+/**
+ * Returns true if word is in dictionary else false.
+ */
+bool check(const char* word)
+{
+
+    int len = strlen(word);
+
+    char * lower_case_word = malloc( sizeof(char) * (len+1) );
+
+    lower_case_word[len+1] = '\0';
+
+
+
+    // change all letters to lowercase
+    for(int i = 0; i < len; i++){
+        lower_case_word[i] = tolower(word[i]);
+    }
+
+    // generate the int hash
+    int index = generate_hash(lower_case_word);
+
+    // traverse the linked list at the array index
+    node_ptr trav = hashtable[index];
+
+    // loop through while node->next is not null
+    while (trav != NULL){
+        if ( strcmp(trav->word, lower_case_word) == 0){
+            return true;
         }
-        //copy word into node
-        strcpy(n->word, word);
-        n->next = NULL;
-        int bucket = hash(word);
-        n->next = table[bucket];
-        table[bucket] = n;
-        //use hash function to return an index
-        //insert word into linked list
-            //set pointers in correct order
+
+        trav = trav->next;
+
     }
+
+    // if we get to this point the word was not found
+    //printf("searched the entire bucket and the word was not found!\n");
+
     return false;
 }
 
-// Returns number of words in dictionary if loaded else 0 if not yet loaded
+/**
+ * Loads dictionary into memory.  Returns true if successful else false.
+ */
+bool load(const char* dictionary) // passing in the file name of the dictionary
+{
+    // create a FILE pointer and fopen() to start the stream
+    FILE * dictionary_stream = fopen(dictionary, "r");
+
+    // get each line
+    // create a node
+    // save to node->text
+    // insert into hashtable
+
+
+    char temp[LENGTH+1] = {'\0'};
+
+    // the condition in this while loop is also storing
+    // the string as well so...a slick way of doing
+    // two jobs in one place!
+    while (fscanf(dictionary_stream, "%s", temp) == 1){
+
+        // make space for a node
+        node_ptr d_node_ptr = malloc(sizeof(struct node));
+
+        // set node's next property to null
+        d_node_ptr->next = NULL;
+
+        // save the current word in the node's char property
+
+        strcpy(d_node_ptr->word, temp);
+
+        // generate a hash
+        int ht_index = generate_hash(d_node_ptr->word);
+
+        // insert node into hashtable
+        insert(d_node_ptr, ht_index);
+
+        //
+        dictionary_word_counter++;
+
+        //printf("item inserted %s at index: %d\n", hashtable[ht_index]->word, ht_index);
+    }
+
+    return true;
+}
+
+/**
+ * Returns number of words in dictionary if loaded else 0 if not yet loaded.
+ */
 unsigned int size(void)
 {
-    // TODO
-    return 0;
+    return dictionary_word_counter;
 }
 
-// Unloads dictionary from memory, returning true if successful else false
-
-
-void freeSLList(node *n)
-{
-    if(n == NULL)// base case
-    {
-        // stop
-        free(n);
-    }
-    else
-    {
-        freeSLList(n->next);
-        free(n);
-    }
-}
+/**
+ * Unloads dictionary from memory.  Returns true if successful else false.
+ */
 bool unload(void)
 {
-    //free the malloc for each linked list in table
-    for (int i = 0; i < N; i++)
-    {
-        freeSLList(table[i]);
+    for(int i = 0; i < MAX_BUCKETS; i++){
+        free_linked_list(hashtable[i]);
     }
 
     return true;
