@@ -53,12 +53,31 @@ bool check(const char *word)
 }
 
 // Hashes word to a number
-int hash(const char *word)
+unsigned int hash(const char *word)
 {
+    // TODO
     unsigned int hash = 0;
-    for (int i = 0, n = strlen(word); i < n; i++)
-        hash = (hash << 2) ^ word[i];
-    return hash % HASHTABLE_SIZE;
+    int first = 0;
+    int second = 0;
+    if(word[0] > 64)
+    {
+        first = word[0]-32;
+    }
+    else
+    {
+        first = word[0];
+    }
+    if(word[1] > 64)
+    {
+        second = word[1]-32;
+    }
+    else
+    {
+        second = word[1];
+    }
+    int bucket = ((first - 65)*26) + (second - 65);
+    printf("%i", bucket);
+    return bucket;
 }
 
 // Loads dictionary into memory, returning true if successful else false
