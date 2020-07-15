@@ -113,8 +113,9 @@ bool load(const char *dictionary)
             tmp->next = table[index];
             table[index] = tmp;
         }
+        fp_size++;
     }
-    fp_size++;
+
     fclose(fp);
     return true;
 
