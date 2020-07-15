@@ -1,5 +1,3 @@
-// Implements a dictionary's functionality
-
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -131,16 +129,14 @@ unsigned int size(void)
 // Unloads dictionary from memory, returning true if successful else false
 bool unload(void)
 {
-    for (int in = 0; in < 264636; in++)
+    node *head = NULL;
+    node *cursor = head;
+    // freeing linked lists
+    while (cursor != NULL)
     {
-        node *fhead = hashtable[in];
-        while (fhead != NULL)
-        {
-            node *fcursor = fhead->next;
-            free(fhead);
-            fhead = fcursor;
-        }
+        node *temp = cursor;
+        cursor = cursor->next;
+        free(temp);
     }
     return true;
 }
-
