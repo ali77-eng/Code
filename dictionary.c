@@ -1,9 +1,13 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
-#include "dictionary.h"
-#include <string.h>
 #include <strings.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <cs50.h>
+#include <string.h>
+#include <ctype.h>
+
+#include "dictionary.h"
+
 
 // Represents a node in a hash table
 typedef struct node
@@ -14,104 +18,138 @@ typedef struct node
 node;
 
 // Number of buckets in hash table
-const unsigned int N = 26;
-unsigned int key;
-unsigned int word_count = 0;
+const unsigned int N = 676;
 
 // Hash table
 node *table[N];
-
+int fp_size = 0;
 // Returns true if word is in dictionary else false
 bool check(const char *word)
 {
-    unsigned int hashvalue = hash(word);
-    node *cursor;
-    cursor = table[hashvalue];
+    // TODO
+    char bord[LENGTH+1];
+    int n = strlen(word);
+    for (int i = 0; i < n+1; i++)
+    {
+        bord[i] = tolower(word[i]);
+    }
+    bord[LENGTH] = '\0';
+
+    int bucket = hash(bord);
+    node *cursor = table[bucket];
     while (cursor != NULL)
     {
-        if (strcasecmp(word, cursor->word) == 0)
+        if(strcasecmp(cursor->word, bord) == 0)
         {
             return true;
         }
         else
         {
-          cursor = cursor->next;
+            cursor=cursor->next;
         }
     }
+
     return false;
 }
 
 // Hashes word to a number
 unsigned int hash(const char *word)
 {
-   unsigned int x = (unsigned int) word[0];
-    if (x >= 'a' && x <= 'z')
+    // TODO
+    unsigned int hash = 0;
+    int first = 0;
+    int second = 0;
+    if(word[0] > 64)
     {
-        x = x - 97;
+        first = word[0]-32;
     }
-    else if(x >= 'A' && x <= 'Z')
+    else
     {
-        x = x - 65;
+        first = word[0];
     }
-    return x;
+    if(word[1] > 64)
+    {
+        second = word[1]-32;
+    }
+    else
+    {
+        second = word[1];
+    }
+    int bucket = ((first - 65)*26) + (second - 65);
+    printf("%i", bucket);
+    return bucket;
 }
 
 // Loads dictionary into memory, returning true if successful else false
 bool load(const char *dictionary)
 {
-    char w[LENGTH + 1];
-    FILE *file = fopen(dictionary, "r");
-    if (file == NULL)
+    char * word = 0;
+    // TODO
+    //fopen
+    FILE * fp;
+    fp = fopen("dictionary", "w");
+    //check if return value is NULL
+    if (fp == NULL)
     {
-        return false;
+        fprintf(stderr, "Could not open %s.\n", dictionary);
+        return 1;
     }
-    while (fscanf(file, "%s", w) != EOF)
+    //read strings
+    //fscanf(file, "%s", word)
+        //EOF means end of file
+    while (fscanf(fp, "%s", word) != EOF)
     {
-        node *new_node = malloc(sizeof(node));
-        if (new_node == NULL)
+        //create node
+        node *n = malloc(sizeof(node));
+
+        //check if return is NULL
+        if (n == NULL)
         {
             return false;
         }
-        int index = hash(w);
-        strcpy(new_node->word, w);
-        if (table[index] == NULL)
-        {
-            table[index] = new_node;
-            new_node->next = NULL;
-        }
-        else
-        {
-            new_node->next = table[index];
-            table[index] = new_node;
-        }
-        word_count++;
+        //copy word into node
+        strcpy(n->word, word);
+        n->next = NULL;
+        int bucket = hash(word);
+        n->next = table[bucket];
+        table[bucket] = n;
+        //use hash function to return an index
+        //insert word into linked list
+            //set pointers in correct order
+        fp_size++;
     }
-    fclose(file);
-    return true;
+    fclose(fp);
+    return false;
 }
+
 
 // Returns number of words in dictionary if loaded else 0 if not yet loaded
 unsigned int size(void)
 {
-    if (word_count > 0)
+    // TODO
+    return fp_size;
+}
+
+void end(node *head)
+{
+    if (head->next != NULL)
     {
-         return word_count;
+        end(head->next);
     }
-    return 0;
+    free(head);
 }
 
 // Unloads dictionary from memory, returning true if successful else false
 bool unload(void)
 {
-    for (int i = 0; i < N; i++)
+    // TODO
+    //free memory using valgrind
+    for (int i = 0; i < N; i ++)
     {
-        node *cursor = table[i];
-        while (cursor != NULL)
+        if (table[i] != NULL)
         {
-            node *tmp = cursor;
-            cursor = cursor->next;
-            free(tmp);
+            end(table[i]);
         }
     }
-    return false;
+    return true;
 }
