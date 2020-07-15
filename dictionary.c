@@ -127,31 +127,28 @@ unsigned int size(void)
 }
 
 // Unloads dictionary from memory, returning true if successful else false
-bool unload(void)
+
+
+void freeSLList(node *n)
 {
-    // Check if root_node has been allocated or not
-    if (root_node != NULL)
+    if(n == NULL)// base case
     {
-        // If allocated delete root with all corresponding children
-        delete_root(root_node);
-        return true;
+        // stop
+        free(n);
     }
     else
-        return false;
-}
-
-// Delete all root nodes using recursion
-void delete_root(trie* root)
-{
-    for (int i = 0; i < 10000; i++)
     {
-        if (root->alphabet[i] != NULL)
-        {
-            delete_root(root->alphabet[i]);
-        }
+        freeSLList(n->next);
+        free(n);
+    }
+}
+bool unload(void)
+{
+    //free the malloc for each linked list in table
+    for (int i = 0; i < N; i++)
+    {
+        freeSLList(table[i]);
     }
 
-    free(root);
-    root = NULL;
-    return;
+    return true;
 }
