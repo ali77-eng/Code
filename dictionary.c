@@ -83,7 +83,7 @@ unsigned int hash(const char *word)
 // Loads dictionary into memory, returning true if successful else false
 bool load(const char *dictionary)
 {
-    char * word = 0;
+    char buff[LENGTH + 1];
     // TODO
     //fopen
     FILE * fp;
@@ -97,29 +97,42 @@ bool load(const char *dictionary)
     //read strings
     //fscanf(file, "%s", word)
         //EOF means end of file
-    while (fscanf(fp, "%s", word) != EOF)
+    while (fscanf(fp, "%s", buff) != EOF)
     {
         //create node
-        node *n = malloc(sizeof(node));
+        node *tmp = malloc(sizeof(node));
+
+        strncpy(tmp->word, buff, sizeof(buff));
+        int index = hash(buff);
+
+        if (table[index] == NULL)
+        {
+            table[index] = tmp;
+        }
+        else
+        {
+            tmp->next = table[index];
+            table[index] = tmp;
+        }
+    }
+    fp_size++;
+    fclose(fp);
+    return true;
 
         //check if return is NULL
-        if (n == NULL)
-        {
-            return false;
-        }
+       // if (n == NULL)
+  //      {
+//            return false;
+ //       }
         //copy word into node
-        strcpy(n->word, word);
-        n->next = NULL;
-        int bucket = hash(word);
-        n->next = table[bucket];
-        table[bucket] = n;
+ //       strcpy(n->word, word);
+ //      n->next = NULL;
+ //       int bucket = hash(word);
+ //       n->next = table[bucket];
+ //       table[bucket] = n;
         //use hash function to return an index
         //insert word into linked list
             //set pointers in correct order
-        fp_size++;
-    }
-    fclose(fp);
-    return false;
 }
 
 
