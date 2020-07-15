@@ -33,7 +33,6 @@ bool check(const char *word)
     {
         bord[i] = tolower(word[i]);
     }
-    bord[LENGTH] = '\0';
 
     int bucket = hash(bord);
     node *cursor = table[bucket];
