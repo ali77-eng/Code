@@ -129,14 +129,29 @@ unsigned int size(void)
 // Unloads dictionary from memory, returning true if successful else false
 bool unload(void)
 {
-    node *head = NULL;
-    node *cursor = head;
-    // freeing linked lists
-    while (cursor != NULL)
+    // Check if root_node has been allocated or not
+    if (root_node != NULL)
     {
-        node *temp = cursor;
-        cursor = cursor->next;
-        free(temp);
+        // If allocated delete root with all corresponding children
+        delete_root(root_node);
+        return true;
     }
-    return true;
+    else
+        return false;
+}
+
+// Delete all root nodes using recursion
+void delete_root(trie* root)
+{
+    for (int i = 0; i < 10000; i++)
+    {
+        if (root->alphabet[i] != NULL)
+        {
+            delete_root(root->alphabet[i]);
+        }
+    }
+
+    free(root);
+    root = NULL;
+    return;
 }
